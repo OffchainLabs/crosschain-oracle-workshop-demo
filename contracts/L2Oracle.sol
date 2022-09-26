@@ -32,40 +32,5 @@ contract L2Oracle {
         chainlinkOracleL2 = _chainlinkOracleL2;
         sequencerUptimeFeed = _sequencerUptimeFeed;
     }
-
-    modifier onlyFromL1Oracle() {
-        require(msg.sender == l1OracleAliased, "NOT_FROM_L1_ORACLE");
-        _;
-    }
-
-    function receiveOracleDataFromL1(
-        uint256 sumL1OrackePrices,
-        uint256 l1ChainlinkPriceUpdatedAt
-    ) external onlyFromL1Oracle {
-        (, int256 answer, , , ) = AggregatorV3Interface(sequencerUptimeFeed)
-            .latestRoundData();
-
-        require(answer == 1, "SEQUENCER_DOWN");
-
-        (
-            uint256 uniswapPrice,
-            uint256 chainlinkPrice,
-            uint256 l2chainlinkPriceUpdatedAt
-        ) = PriceOracleGetter.getLinkPrices(uniOralceL2, chainlinkOracleL2);
-
-        uint256 minChainLinkUpdatedAt = l1ChainlinkPriceUpdatedAt <
-            l2chainlinkPriceUpdatedAt
-            ? l1ChainlinkPriceUpdatedAt
-            : l2chainlinkPriceUpdatedAt;
-        require(block.timestamp >= minChainLinkUpdatedAt, "NONSENSE_PRICE");
-        require(
-            block.timestamp - minChainLinkUpdatedAt < MAX_DRIFT,
-            "PRICE_DRIFT"
-        );
-
-        priceFeed = PriceFeed(
-            (sumL1OrackePrices + uniswapPrice + chainlinkPrice) / 4,
-            block.timestamp
-        );
-    }
+    
 }

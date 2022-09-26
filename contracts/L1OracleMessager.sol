@@ -45,37 +45,4 @@ contract L1OracleMessager {
         chainlinkOracle = _chainlinkOracle;
     }
 
-    function sendOracleDataToL2(
-        uint256 maxSubmissionCost,
-        uint256 l2GasLimit,
-        uint256 maxFeePerL2Gas,
-        address refundAddress
-    ) public payable returns (uint256) {
-        bytes memory l2MessageCallData = getL2RetryableCalldata();
-        return IInbox(inbox).createRetryableTicket{value: msg.value}(
-            l2Oracle,
-            0,
-            maxSubmissionCost,
-            refundAddress,
-            refundAddress,
-            l2GasLimit,
-            maxFeePerL2Gas,
-            l2MessageCallData
-        );
-    }
-
-    function getL2RetryableCalldata() public view returns (bytes memory) {
-        (
-            uint256 uniswapPrice,
-            uint256 chainlinkPrice,
-            uint256 chainlinkPriceUpdatedAt
-        ) = PriceOracleGetter.getLinkPrices(uniOracle, chainlinkOracle);
-
-        return
-            abi.encodeWithSelector(
-                L2Oracle.receiveOracleDataFromL1.selector,
-                uniswapPrice + chainlinkPrice,
-                chainlinkPriceUpdatedAt
-            );
-    }
 }

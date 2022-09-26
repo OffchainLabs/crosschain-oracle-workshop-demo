@@ -21,34 +21,6 @@ const config = {
     }
   }
 };
-task("deploy-stubs", "Prints the list of accounts", async (taskArgs, hre) => {
-  const SequencerFeedStub__factory = await hre.ethers.getContractFactory(
-    "SequencerFeedStub"
-  );
-  const SequencerFeedStub = await SequencerFeedStub__factory.deploy();
-
-  await SequencerFeedStub.deployed();
-
-  console.log(`SequencerFeedStub deployed to ${SequencerFeedStub.address}`);
-
-  const PriceFeedStub__factory = await hre.ethers.getContractFactory(
-    "PriceFeedStub"
-  );
-  const PriceFeedStub = await PriceFeedStub__factory.deploy();
-
-  await PriceFeedStub.deployed();
-
-  console.log(`PriceFeedStub deployed to ${PriceFeedStub.address}`);
-
-  const PriceGetterStub__factory = await hre.ethers.getContractFactory(
-    "PriceGetterStub"
-  );
-  const PriceGetterStub = await PriceGetterStub__factory.deploy();
-
-  await PriceGetterStub.deployed();
-
-  console.log(`PriceGetterStub deployed to ${PriceGetterStub.address}`);
-});
 
 task("deploy-oracles-arb-goerli", "deploys oracles", async (taskArgs, hre) => {
   const ARB_INBOX = "0x6BEbC4925716945D46F0Ec336D5C2564F419682C";

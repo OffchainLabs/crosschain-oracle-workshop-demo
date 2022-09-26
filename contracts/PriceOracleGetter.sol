@@ -16,15 +16,6 @@ library PriceOracleGetter {
             uint256 chianlinkPriceUpdatedAt
         )
     {
-        (, uint128 _uniswapPrice) = OracleLibrary.consult(uniswapOracle, 120);
-        (
-            ,
-            int256 _chainlinkPrice,
-            ,
-            uint256 chianlinkPriceUpdatedAt,
 
-        ) = AggregatorV3Interface(chainlinkOraclesAddress).latestRoundData();
-        uint256 uniswapPrice = uint256(_uniswapPrice);
-        uint256 chainlinkPrice = uint256(_chainlinkPrice);
     }
 }
