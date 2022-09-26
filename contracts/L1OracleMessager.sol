@@ -50,9 +50,9 @@ contract L1OracleMessager {
         uint256 l2GasLimit,
         uint256 maxFeePerL2Gas,
         address refundAddress
-    ) public payable returns (bool) {
+    ) public payable returns (uint256) {
         bytes memory l2MessageCallData = getL2RetryableCalldata();
-        IInbox(inbox).createRetryableTicket{value: msg.value}(
+        return IInbox(inbox).createRetryableTicket{value: msg.value}(
             l2Oracle,
             0,
             maxSubmissionCost,
