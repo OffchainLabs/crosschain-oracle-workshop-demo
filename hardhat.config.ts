@@ -4,7 +4,6 @@ import { task } from "hardhat/config";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { Wallet } from "@ethersproject/wallet";
 import { L1ToL2MessageGasEstimator, L1TransactionReceipt } from "@arbitrum/sdk";
-import { getAddress } from "@ethersproject/address";
 import { addressAlias } from "./alias";
 
 require("dotenv").config();
