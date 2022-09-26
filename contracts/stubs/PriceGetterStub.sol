@@ -3,7 +3,7 @@ pragma solidity ^0.7.0;
 import "@chainlink/contracts/src/v0.7/interfaces/AggregatorV3Interface.sol";
 import "@uniswap/v3-periphery/contracts/libraries/OracleLibrary.sol";
 
-library PriceOracleGetter {
+library PriceGetterStub {
     function getLinkPrices(
         address chainlinkOraclesAddress,
         address uniswapOracle
@@ -16,15 +16,6 @@ library PriceOracleGetter {
             uint256 chianlinkPriceUpdatedAt
         )
     {
-        (, uint128 _uniswapPrice) = OracleLibrary.consult(uniswapOracle, 120);
-        (
-            ,
-            int256 _chainlinkPrice,
-            ,
-            uint256 chianlinkPriceUpdatedAt,
-
-        ) = AggregatorV3Interface(chainlinkOraclesAddress).latestRoundData();
-        uint256 uniswapPrice = uint256(_uniswapPrice);
-        uint256 chainlinkPrice = uint256(_chainlinkPrice);
+        return (2, 3, block.timestamp - 4);
     }
 }

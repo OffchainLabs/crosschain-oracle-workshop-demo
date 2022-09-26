@@ -20,9 +20,6 @@ pragma solidity ^0.7.0;
 pragma experimental ABIEncoderV2;
 
 import "arb-bridge-eth/contracts/bridge/interfaces/IInbox.sol";
-import "arb-bridge-eth/contracts/bridge/interfaces/IOutbox.sol";
-import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
-import "@uniswap/v3-periphery/contracts/libraries/OracleLibrary.sol";
 import "./PriceOracleGetter.sol";
 import "./L2Oracle.sol";
 
@@ -31,12 +28,6 @@ contract L1OracleMessager {
     address public inbox;
     address public uniOracle;
     address public chainlinkOracle;
-
-    struct L2GasParams {
-        uint256 _maxSubmissionCost;
-        uint256 _maxGas;
-        uint256 _gasPriceBid;
-    }
 
     function initialize(
         address _l2Oracle,
@@ -60,20 +51,9 @@ contract L1OracleMessager {
         uint256 maxFeePerL2Gas,
         address refundAddress
     ) public payable returns (bool) {
-        (
-            uint256 uniswapPrice,
-            uint256 chainlinkPrice,
-            uint256 chainlinkPriceUpdatedAt
-        ) = PriceOracleGetter.getLinkPrices(uniOracle, chainlinkOracle);
-
-        bytes memory l2MessageCallData = abi.encodeWithSelector(
-            L2Oracle.receiveOracleDataFromL1.selector,
-            uniswapPrice + chainlinkPrice,
-            chainlinkPriceUpdatedAt
-        );
-
+        bytes memory l2MessageCallData = getL2RetryableCalldata();
         IInbox(inbox).createRetryableTicket{value: msg.value}(
-            l2Oracle, 
+            l2Oracle,
             0,
             maxSubmissionCost,
             refundAddress,
@@ -82,7 +62,20 @@ contract L1OracleMessager {
             maxFeePerL2Gas,
             l2MessageCallData
         );
+    }
 
+    function getL2RetryableCalldata() public view returns (bytes memory) {
+        (
+            uint256 uniswapPrice,
+            uint256 chainlinkPrice,
+            uint256 chainlinkPriceUpdatedAt
+        ) = PriceOracleGetter.getLinkPrices(uniOracle, chainlinkOracle);
 
+        return
+            abi.encodeWithSelector(
+                L2Oracle.receiveOracleDataFromL1.selector,
+                uniswapPrice + chainlinkPrice,
+                chainlinkPriceUpdatedAt
+            );
     }
 }
